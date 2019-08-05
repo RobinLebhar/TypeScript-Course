@@ -342,8 +342,3 @@ interface Person {
 p.age = 10
 p.id = "9000"
  */
-
- // CONFIGURER UN PROJET  EXISTANT REACT REDUX
- // npm install --save awesome-typescript-loader typescript @types/node @types/react @types/react-dom @types/jest @types/react-redux @types/redux
-
- //awesome-typescript-loader: As webpack only understands plain CSS, javascript, and HTML. This is a webpack loader which helps in communicating webpack with typescript to compile TypeScript code to JavaScript code. 
