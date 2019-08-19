@@ -262,53 +262,133 @@ function test(): Identity & Size {
 // DECORATORS
 
 // decorators can be used to annotate a class, property, method or parameter.
+// Les décorateurs
 
-// "experimentalDecorators": true
-/*
-function classLogger(target:Function){
-   //  console.log("classLogger()",target)
+// pour annoter des classes, des méthodes, des ariable et même des paramètres
+// experimentalDecorators: true
+
+
+// ordre d'execution
+// Parameter Decorator — Priority 1 (Object Instance, Static)
+// Method Decorator — Priority 2 (Object Instance, Static)
+// Accessor or Property Decorator — Priority 3 (Object Instance, Static)
+// Class decorator — Priority 4 (Object Instance, Static)
+
+// @logClass(true)
+
+class UneClasse {
+    @logProperty()
+    private _uneVariable: string
+    constructor(v: string) {
+        this._uneVariable = v
+    }
+    @logMethod()
+    multiply(a: number, b: number) {
+        console.log("multiply() ");
+        return a * b
+    }
+    @logMethod()
+    toPlural(textList: string[]) {
+        return textList.map((t: string) => t + "s")
+    }
+    get uneVariable() {
+        return this._uneVariable
+    }
+    set uneVariable(v: string) {
+        this._uneVariable = v
+    }
 }
-function methodLogger(showResult:boolean){
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        const method: Function = descriptor.value;
 
-        descriptor.value = function(...args: any[]){
-            const params = args.map(p => JSON.stringify(p)).join()
-            const result = method.apply(this, args);
-            console.log("Function called : "+propertyKey+"("+params+") ")
-            if(showResult) console.log("Result is : "+JSON.stringify(result));
-            return result;
+
+
+
+
+
+
+
+// *********************** DECORATEUR DE CLASSE ******************************
+function logClass(toUpperCase: boolean) {
+    return function (classConstructor: Function) {
+        console.log("logClass() : ", classConstructor.toString().toUpperCase());
+    }
+}
+// ***************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// *********************** DECORATEUR DE METHODE ******************************
+// target — current object’s prototype i.e — If Employee is an Object, Employee.prototype
+function logMethod() {
+    return function (target: Object, methodName: string, propertyDescriptor: PropertyDescriptor): PropertyDescriptor {
+        const method: Function = propertyDescriptor.value;
+        propertyDescriptor.value = function (...functionArguments: any[]) {
+            // invoque la méthode avec ses parametres
+            const result = method.apply(this, functionArguments)
+            console.log("La fonction ", methodName, " appelée avec :", functionArguments, ",  le resultat : ", result)
         }
+        return propertyDescriptor
     }
 }
 
 
-function attributeLogger(target: Object, propertyKey: string ){
-  //  console.log("attributeLogger()",target, propertyKey)
+
+const u = new UneClasse("test")
+const result = u.multiply(2, 3)
+const p = u.toPlural(["chien", "chat", "poule"])
+// ***************************************************************************
+
+
+
+
+
+
+
+
+
+// *********************** DECORATEUR DE PROPRIETE ******************************
+function logProperty() {
+    return function (target: Object, propertyName: string) {
+        let propertyValue = this[propertyName];
+
+        const getterWithLogger = () => {
+            console.log(`Get: ${propertyName} => ${propertyValue}`);
+            return propertyValue;
+        };
+
+        const setterWithLogger = newVal => {
+            console.log(`Set: ${propertyName} => ${newVal}`);
+            propertyValue = newVal;
+        };
+        Object.defineProperty(target, propertyName, {
+            get: getterWithLogger,
+            set: setterWithLogger,
+            enumerable: true,
+            configurable: true
+        });
+
+    }
 }
 
-
-class Test {
-    private _a : string;
-    private _b: number;
-
-
-    get a():string {
-        return this._a
-    }
-    get b(): number {
-        return this._b
-    }
-    set a(_a: string) {
-        this._a = _a;
-    }
-   @methodLogger(true)
-    public add(a:number,b:number){
-        return a+b
-    }
-}
-const t = new Test();
-console.log(t.add(1,2));
+const t = u.uneVariable
+u.uneVariable = "Test modifié"
+// ***************************************************************************
 
 */
 
